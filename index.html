@@ -36,6 +36,7 @@
                             </div>
                                 <div class="hero-buttons"><a href="https://t.me/winlambo_official" target="_blank" rel="noopener noreferrer"><button class="px-8 rounded-\ bg-primary text-secondary py-3 shadow-md disable-zoom-tap">Telegram</button></a></div>
                                 <div class="hero-buttons"><a href="https://exchange.pancakeswap.finance/#/swap" target="_blank" rel="noopener noreferrer"><button class="border border-primary bg-primary-1 px-8 rounded-sm py-3 disable-zoom-tap">Buy Now</button></a></div>
+                                <!-- <div class="hero-buttons"><button class="border border-primary bg-primary-1 px-8 rounded-sm py-3 disable-zoom-tap" onClick="getTop100Accounts()">Leaderboard List</button></div> -->
                             
                         </div>
 <!--                         <div class="hidden lg:flex flex-1 items-center justify-end">
@@ -50,10 +51,7 @@
                             <h2 class="text-2xl sm:text-3xl border-l-4 border-secondary pl-4 mb-4">Frictionless Lambo Generation. Hold and Win. </h2>
                             <p class="font-dark sm:text-lg">Welcome to WINLAMBO! Our plan is to send out lambos to the community like the Chad Oprah Winfrey!</p>
                             <p class="font-dark sm:text-lg mt-5">Simply buy and hold for a chance to win $210,000- enough to buy a spankin' new 2021 Huracan Evo!</p>
-
-                            
                         </div>
-                        <div class="hidden lg:flex flex-1 justify-end"><img class="max-w-lg" src="/static/img/carbon-lambo.png" style="max-height: 450px;" alt=""></div>
                     </div>
                 </section>
                 <section class="px-6 py-20 bg-secondary text-white">
@@ -74,7 +72,7 @@
                 </section>
                 <section class="px-6 py-20 bg-white text-dark  ">
                     <div class="container mx-auto flex items-center">
-                        <div class="flex-1">
+                        <div class="flex-1" style="align-self: flex-start;">
                             <h2 class="text-2xl sm:text-3xl border-l-4 border-secondary pl-4 mb-4">Mechanics</h2>
                             
                             <p class="font-light sm:text-lg"> 
@@ -100,6 +98,22 @@
                                 
                         </div>
                         <div class="hidden lg:flex flex-1 justify-end"><img class="max-w-md" src="/static/img/roadmap.svg" style="max-height: 450px;" alt=""></div>
+                        <div class="flex-2" style="align-self: flex-start;">
+                            <h2 class="text-2xl sm:text-3xl border-l-4 border-secondary pl-4 mb-4">Top 100 Accounts</h2>
+                            <table class="table-scroll small-first-col" id="topAccounts">
+                                <thead>
+                                  <tr>
+                                  <th>No</th>
+                                  <th>Address</th>
+                                  <th style="flex-basis: 10%;">Amount</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="body-half-screen" >
+                                  <tr></tr>
+                                </tbody>
+                              </table>
+                        </div>                        
+                        
                     </div>
                 </section>
 

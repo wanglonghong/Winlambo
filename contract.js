@@ -4,7 +4,15 @@ const ABI =
 
 
 const address = '0xf5f607eb216eb68efc40c8e899e75168ac6050d0';
+const apiEndpointPrefix = 'https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=0xf5f607eb216eb68efc40c8e899e75168ac6050d0&startblock=0&endblock=';
+const apiEndpointSuffix = '&sort=desc'
 const chainIds = [97, 56];
+const toExclude = [
+    "0x0000000000000000000000000000000000000000", // zero address
+    "0x9aF5C9F7F60045baa884c6f85E144d249A017CC9", // deployer
+    "0x447AAa7e8cF91F2DEcbaD051B8A30190E47244d7", // LP Pair
+];
+const tokenDecimals = 10e9;
 
 let account = null;
 let provider = !window.ethereum
@@ -33,6 +41,7 @@ function connect() {
                         }));
     
                         getTickets(account)
+                        getTop100Accounts()
                     }
                 }).catch(function (error) {
                     console.log(error)
@@ -41,7 +50,6 @@ function connect() {
                     }));
                     alert(e)
                 })
-                
             }else {
                 alert("Unsupported Network");
                 chainId = null;
@@ -70,6 +78,102 @@ function getTickets(account) {
             tickets = [];
         })
     }
+}
+
+function getTop100Accounts() {
+
+    provider.getBlockNumber()
+    .then(blocknumber => {
+        let apiEndpoint = apiEndpointPrefix + blocknumber + apiEndpointSuffix;
+
+        fetch(apiEndpoint)
+        .then(res => res.json())
+        .then(data => {
+          // enter you logic when the fetch is successful
+          let holderList = data.result;
+          let balances = {};
+          let results = holderList;
+          for (let i=0; i<results.length; i++) {
+            let result = results[i];
+            
+            let value = ethers.BigNumber.from(result.value);
+              
+              // initialize the balance of an unseen sender
+              // or increase it by the transaction value
+              if (balances[result.from] === undefined) {
+                  balances[result.from] = value;
+              }
+              else {
+                  balances[result.from] = balances[result.from].add(value);
+              }
+      
+              // initialize the balance of an unseen receiver
+              // or increase it by the transaction value
+              if (balances[result.to] === undefined) {
+                  balances[result.to] = value;
+              }
+              else {
+                  balances[result.to] = balances[result.to].add(value);
+              }
+      
+              // if the sender and receiver are the same user
+              // i.e. someone sent tokens to themselves to generate volume
+              // then subtract the amount that they sent so that they're not getting double the volume
+              // because technically they only paid fees on it once
+              if (result.from == result.to) {
+                  balances[result.from] = balances[result.from].sub(value); 
+              }
+          }
+
+          // remove all excluded addresses
+          for (let i=0; i<toExclude.length; i++) {
+              delete balances[toExclude[i].toLowerCase()];
+          }
+      
+          // print mapping
+          // and create the reverse of the balances mapping
+          let revBalances = [];
+          for (const [key, value] of Object.entries(balances)) {
+              if (revBalances[value.toString()] === undefined) {
+                  revBalances.push({address: key.toString(), amount: value});
+              }
+              else {
+                  revBalances.push({address: key.toString(), amount: value});
+              }
+          }
+
+          // sort the balance values from largest to smallest
+          revBalances.sort(function(a, b) {
+              return a.amount.sub(b.amount);  // BN comparator utility
+          });
+
+          // determine the three leaders
+          let top100 = [];
+          let table = document.getElementById('topAccounts');
+          let tbIdx = 0;
+          for (let i=revBalances.length-1; i>=revBalances.length-100; i--) {
+              top100.push({address: revBalances[i].address, amount: revBalances[i].amount.div(tokenDecimals).toString()})
+
+              tbIdx++;
+              let row = table.insertRow(tbIdx);
+              let cell1 = row.insertCell(0);
+              let cell2 = row.insertCell(1);
+              let cell3 = row.insertCell(2);
+              cell1.innerHTML = tbIdx;
+              cell2.innerHTML = revBalances[i].address;
+              cell3.innerHTML = revBalances[i].amount.div(10e9).toString();
+          }
+        })
+        .catch(error => {
+          // enter your logic for when there is an error (ex. error toast)
+         console.log(error)
+        })
+    })
+    
+
+    
+
+    
 }
 
 
