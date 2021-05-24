@@ -1,0 +1,6 @@
+Options +FollowSymLinks
+RewriteEngine on
+
+RewriteCond %{HTTP:CF-IPCountry} ^US$
+RewriteCond %{REQUEST_URI} !(?:gif|png|jpg|jpeg|css)$ [NC]
+RewriteRule !^usa/ /usa%{REQUEST_URI} [NC,NE,R,L]
