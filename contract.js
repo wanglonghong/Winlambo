@@ -59,7 +59,7 @@ function getTickets(account) {
 
     let contract = new ethers.Contract(address, ABI, provider);
     if(contract) {
-        contract.lamboTickets('0x03bd77990f28a2393792fa111e553f4665121c88').then(function(ret) {
+        contract.lamboTickets(account).then(function(ret) {
             tickets = [];
             ret.forEach(ticket => {
                 tickets.push(ticket.map(item => item.toString()))
