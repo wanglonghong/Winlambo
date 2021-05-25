@@ -3,9 +3,8 @@ const ABI =
 
 
 
-const address = '0xf5f607eb216eb68efc40c8e899e75168ac6050d0';
-const apiEndpointPrefix = 'https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=0xf5f607eb216eb68efc40c8e899e75168ac6050d0&startblock=0&endblock=';
-const apiEndpointSuffix = '&sort=desc'
+const address = '0x89c42a21b92622C96e48793d25b2dffD194E1dB4';
+const apiEndpoint = 'https://api.bscscan.com/api?module=account&action=tokentx&contractAddress=0x89c42a21b92622C96e48793d25b2dffD194E1dB4&startblock=0&endblock=999999999999&sort=desc';
 const chainIds = [97, 56];
 const toExclude = [
     "0x0000000000000000000000000000000000000000", // zero address
@@ -41,7 +40,6 @@ function connect() {
                         }));
     
                         getTickets(account)
-                        getTop100Accounts()
                     }
                 }).catch(function (error) {
                     console.log(error)
@@ -65,6 +63,7 @@ function getTickets(account) {
         tickets  = [];
     }
 
+
     let contract = new ethers.Contract(address, ABI, provider);
     if(contract) {
         contract.lamboTickets(account).then(function(ret) {
@@ -84,7 +83,6 @@ function getTop100Accounts() {
 
     provider.getBlockNumber()
     .then(blocknumber => {
-        let apiEndpoint = apiEndpointPrefix + blocknumber + apiEndpointSuffix;
 
         fetch(apiEndpoint)
         .then(res => res.json())
@@ -152,6 +150,7 @@ function getTop100Accounts() {
           let table = document.getElementById('topAccounts');
           let tbIdx = 0;
           for (let i=revBalances.length-1; i>=revBalances.length-100; i--) {
+              if (i < 0) break;
               top100.push({address: revBalances[i].address, amount: revBalances[i].amount.div(tokenDecimals).toString()})
 
               tbIdx++;
@@ -195,7 +194,8 @@ document.addEventListener('ticketsUpdated', function (e) {
     let count = tickets.length;
     let tooltip = '';
     tickets.forEach(ticket => {
-        tooltip = tooltip + `${ticket[0]} - ${ticket[1]}` + '\n';
+        let value = ticket[1] - ticket[0] + 1;
+        tooltip = tooltip + `${value}` + '\n';
     })
     $('#ticket-count').text(`${count} Tickets`)
     $('#ticket-range').text(tooltip)
@@ -213,6 +213,7 @@ document.addEventListener('ticketsUpdated', function (e) {
 });
 
 window.onload = function() {
+    getTop100Accounts()
     if(!account) {
         if(window.ethereum) {
             window.ethereum.send('eth_accounts').then(function(ret) {
